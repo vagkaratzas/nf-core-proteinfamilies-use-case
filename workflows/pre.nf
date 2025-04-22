@@ -1,4 +1,4 @@
-include { CHUNK_CLUSTERS } from '../modules/local/chunk_clusters.nf'
+include { EXTRACT_VALID_INTERPRO_IDS } from '../modules/local/extract_valid_interpro_ids/main'
 
 workflow PRE {
     take:
@@ -10,5 +10,6 @@ workflow PRE {
     path_to_pfam
 
     main:
-
+    ch_hierarchy = Channel.fromPath(interpo_hierarchy_file, checkIfExists: true)
+    EXTRACT_VALID_INTERPRO_IDS(ch_hierarchy)
 }
