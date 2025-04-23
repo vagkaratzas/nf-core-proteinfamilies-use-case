@@ -19,7 +19,7 @@ def count_sequences(path):
 
 def write_metadata(folder, output):
     with open(output, 'w') as out:
-        out.write("id\tnum\n")
+        out.write("id\tnum_proteins\n")
         for fname in sorted(os.listdir(folder)):
             if not fname.endswith(".SEED"):
                 continue

@@ -4,6 +4,8 @@ include { EXTRACT_HAMAP_METADATA              } from '../modules/local/extract_h
 include { EXTRACT_NCBIFAM_METADATA            } from '../modules/local/extract_ncbifam_metadata/main'
 include { EXTRACT_PANTHER_METADATA            } from '../modules/local/extract_panther_metadata/main'
 include { EXTRACT_PFAM_METADATA               } from '../modules/local/extract_pfam_metadata/main'
+include { FILTER_VALID_CANDIDATE_FAMILIES     } from '../modules/local/filter_valid_candidate_families/main'
+
 
 workflow PRE {
     take:
@@ -32,4 +34,9 @@ workflow PRE {
 
     ch_pfam = Channel.fromPath(path_to_pfam, checkIfExists: true)
     EXTRACT_PFAM_METADATA( ch_pfam )
+
+    FILTER_VALID_CANDIDATE_FAMILIES( EXTRACT_CANDIDATE_INTERPRO_FAMILIES.out.metadata, \
+        EXTRACT_HAMAP_METADATA.out.metadata, EXTRACT_NCBIFAM_METADATA.out.metadata, \
+        EXTRACT_PANTHER_METADATA.out.metadata, EXTRACT_PFAM_METADATA.out.metadata
+    )
 }
