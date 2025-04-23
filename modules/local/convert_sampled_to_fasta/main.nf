@@ -27,7 +27,7 @@ process CONVERT_SAMPLED_TO_FASTA {
         --hamap ${hamap} \\
         --ncbifam ${ncbifam} \\
         --panther ${panther} \\
-        --pfam ${panther}
+        --pfam ${pfam}
 
     mkdir sampled_fasta 
 

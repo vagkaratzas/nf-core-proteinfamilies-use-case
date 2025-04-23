@@ -18,26 +18,24 @@ def parse_args():
 
 def get_db_path(db, paths):
     db = db.lower()
-    if db == "hamap":
-        return paths["hamap"]
-    elif db == "ncbifam":
-        return paths["ncbifam"]
-    elif db == "panther":
-        return paths["panther"]
-    elif db == "pfam":
-        return paths["pfam"]
-    else:
-        return None
+    return paths.get(db)
+
+
+def find_matching_file(folder: Path, dbkey: str):
+    for file in folder.iterdir():
+        if file.is_file() and file.name.split(".")[0] == dbkey:
+            return file
+    return None
 
 
 def main():
     args = parse_args()
 
     db_paths = {
-        "hamap": args.hamap,
-        "ncbifam": args.ncbifam,
-        "panther": args.panther,
-        "pfam": args.pfam,
+        "hamap": Path(args.hamap),
+        "ncbifam": Path(args.ncbifam),
+        "panther": Path(args.panther),
+        "pfam": Path(args.pfam),
     }
 
     with open(args.metadata_file, newline='') as tsvfile:
@@ -51,11 +49,11 @@ def main():
                 print(f"Unknown DB type '{db}' for IPR {row['interpro_id']}")
                 continue
 
-            file_path = Path(base_path) / f"{dbkey}.fasta"
-            if file_path.exists():
-                print(f"[FOUND] {file_path}")
+            matching_file = find_matching_file(base_path, dbkey)
+            if matching_file:
+                print(f"[FOUND] {matching_file}")
             else:
-                print(f"[NOT FOUND] {file_path}")
+                print(f"[NOT FOUND] {dbkey} in {base_path}")
 
 if __name__ == "__main__":
     main()
