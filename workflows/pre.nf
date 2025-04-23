@@ -6,6 +6,7 @@ include { EXTRACT_PANTHER_METADATA            } from '../modules/local/extract_p
 include { EXTRACT_PFAM_METADATA               } from '../modules/local/extract_pfam_metadata/main'
 include { FILTER_VALID_CANDIDATE_FAMILIES     } from '../modules/local/filter_valid_candidate_families/main'
 include { SAMPLE_INTERPRO                     } from '../modules/local/sample_interpro/main'
+include { CONVERT_SAMPLED_TO_FASTA            } from '../modules/local/convert_sampled_to_fasta/main'
 
 workflow PRE {
     take:
@@ -44,5 +45,9 @@ workflow PRE {
 
     SAMPLE_INTERPRO( FILTER_VALID_CANDIDATE_FAMILIES.out.metadata, ch_hierarchy, \
         min_membership, num_per_db
+    )
+
+    CONVERT_SAMPLED_TO_FASTA( SAMPLE_INTERPRO.out.metadata, \
+        ch_hamap, ch_ncbifam, ch_panther, ch_pfam
     )
 }
