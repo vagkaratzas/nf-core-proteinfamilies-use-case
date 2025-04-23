@@ -1,5 +1,9 @@
 include { EXTRACT_VALID_INTERPRO_IDS          } from '../modules/local/extract_valid_interpro_ids/main'
 include { EXTRACT_CANDIDATE_INTERPRO_FAMILIES } from '../modules/local/extract_candidate_interpro_families/main'
+include { EXTRACT_HAMAP_METADATA              } from '../modules/local/extract_hamap_metadata/main'
+include { EXTRACT_NCBIFAM_METADATA            } from '../modules/local/extract_ncbifam_metadata/main'
+include { EXTRACT_PANTHER_METADATA            } from '../modules/local/extract_panther_metadata/main'
+include { EXTRACT_PFAM_METADATA               } from '../modules/local/extract_pfam_metadata/main'
 
 workflow PRE {
     take:
@@ -12,8 +16,20 @@ workflow PRE {
 
     main:
     ch_hierarchy = Channel.fromPath(interpo_hierarchy_file, checkIfExists: true)
-    EXTRACT_VALID_INTERPRO_IDS(ch_hierarchy)
+    EXTRACT_VALID_INTERPRO_IDS( ch_hierarchy )
 
     ch_mapping = Channel.fromPath(id_mapping_file, checkIfExists: true)
-    EXTRACT_CANDIDATE_INTERPRO_FAMILIES(EXTRACT_VALID_INTERPRO_IDS.out.output, ch_mapping)
+    EXTRACT_CANDIDATE_INTERPRO_FAMILIES( EXTRACT_VALID_INTERPRO_IDS.out.output, ch_mapping )
+
+    ch_hamap = Channel.fromPath(path_to_hamap, checkIfExists: true)
+    EXTRACT_HAMAP_METADATA( ch_hamap )
+
+    ch_ncbifam = Channel.fromPath(path_to_ncbifam, checkIfExists: true)
+    EXTRACT_NCBIFAM_METADATA( ch_ncbifam )
+
+    ch_panther = Channel.fromPath(path_to_panther, checkIfExists: true)
+    EXTRACT_PANTHER_METADATA( ch_panther )
+
+    ch_pfam = Channel.fromPath(path_to_pfam, checkIfExists: true)
+    EXTRACT_PFAM_METADATA( ch_pfam )
 }
