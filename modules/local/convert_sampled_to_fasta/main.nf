@@ -3,8 +3,8 @@ process CONVERT_SAMPLED_TO_FASTA {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/pandas:1.4.3' :
-        'biocontainers/pandas:1.4.3' }"
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/eb/eb3700531c7ec639f59f084ab64c05e881d654dcf829db163539f2f0b095e09d/data' :
+        'community.wave.seqera.io/library/biopython:1.84--3318633dad0031e7' }"
 
     input:
     path sampled_metadata
@@ -27,14 +27,13 @@ process CONVERT_SAMPLED_TO_FASTA {
         --hamap ${hamap} \\
         --ncbifam ${ncbifam} \\
         --panther ${panther} \\
-        --pfam ${pfam}
-
-    mkdir sampled_fasta 
+        --pfam ${pfam} \\
+        --output_folder sampled_fasta
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python --version 2>&1 | sed 's/Python //g')
-        pandas: \$(python -c "import importlib.metadata; print(importlib.metadata.version('pandas'))")
+        biopython: \$(python -c "import importlib.metadata; print(importlib.metadata.version('biopython'))")
     END_VERSIONS
     """
 }
