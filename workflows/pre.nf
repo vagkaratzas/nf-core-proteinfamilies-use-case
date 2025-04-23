@@ -5,7 +5,7 @@ include { EXTRACT_NCBIFAM_METADATA            } from '../modules/local/extract_n
 include { EXTRACT_PANTHER_METADATA            } from '../modules/local/extract_panther_metadata/main'
 include { EXTRACT_PFAM_METADATA               } from '../modules/local/extract_pfam_metadata/main'
 include { FILTER_VALID_CANDIDATE_FAMILIES     } from '../modules/local/filter_valid_candidate_families/main'
-
+include { SAMPLE_INTERPRO                     } from '../modules/local/sample_interpro/main'
 
 workflow PRE {
     take:
@@ -15,6 +15,8 @@ workflow PRE {
     path_to_ncbifam
     path_to_panther
     path_to_pfam
+    min_membership
+    num_per_db
 
     main:
     ch_hierarchy = Channel.fromPath(interpo_hierarchy_file, checkIfExists: true)
@@ -38,5 +40,9 @@ workflow PRE {
     FILTER_VALID_CANDIDATE_FAMILIES( EXTRACT_CANDIDATE_INTERPRO_FAMILIES.out.metadata, \
         EXTRACT_HAMAP_METADATA.out.metadata, EXTRACT_NCBIFAM_METADATA.out.metadata, \
         EXTRACT_PANTHER_METADATA.out.metadata, EXTRACT_PFAM_METADATA.out.metadata
+    )
+
+    SAMPLE_INTERPRO( FILTER_VALID_CANDIDATE_FAMILIES.out.metadata, ch_hierarchy, \
+        min_membership, num_per_db
     )
 }

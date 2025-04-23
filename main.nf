@@ -11,7 +11,10 @@ workflow NFCORE_PROTEINFAMILIES_USE_CASE {
     // WORKFLOW: Run pre pipeline
     //
     if (workflow_mode == "pre") {
-        PRE(params.interpo_hierarchy_file, params.id_mapping_file, params.path_to_hamap, params.path_to_ncbifam, params.path_to_panther, params.path_to_pfam)
+        PRE( params.interpo_hierarchy_file, params.id_mapping_file, \
+            params.path_to_hamap, params.path_to_ncbifam, params.path_to_panther, params.path_to_pfam, \
+            params.min_membership, params.num_per_db
+        )
     }
     //
     // WORKFLOW: Run post pipeline

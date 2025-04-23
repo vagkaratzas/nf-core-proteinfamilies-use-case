@@ -1,4 +1,4 @@
-process FILTER_VALID_CANDIDATE_FAMILIES {
+process SAMPLE_INTERPRO {
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"
@@ -7,24 +7,28 @@ process FILTER_VALID_CANDIDATE_FAMILIES {
         'biocontainers/pandas:1.4.3' }"
 
     input:
-    path interpro
-    path hamap
-    path ncbifam
-    path panther
-    path pfam
+    path metadata
+    path hierarchy
+    val min_membership
+    val num_per_db
 
     output:
-    path "filtered_metadata.tsv", emit: metadata
-    path "versions.yml"         , emit: versions
+    path "log.txt"             , emit: log
+    path "sampled_metadata.tsv", emit: metadata
+    path "versions.yml"        , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
 
     script:
     """
-    filter_valid_candidate_families.py \\
-        ${interpro} ${hamap} ${ncbifam} \\
-        ${panther} ${pfam} filtered_metadata.tsv
+    sample_interpro.py \\
+        --interpro_file ${metadata} \\
+        --tree_file ${hierarchy} \\
+        --min_membership ${min_membership} \\
+        --num_per_db ${num_per_db} \\
+        --logfile log.txt \\
+        --output sampled_metadata.tsv         
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
