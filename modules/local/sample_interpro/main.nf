@@ -14,7 +14,7 @@ process SAMPLE_INTERPRO {
 
     output:
     path "log.txt"             , emit: log
-    path "sampled_metadata.tsv", emit: metadata
+    path "sampled_metadata.csv", emit: metadata
     path "versions.yml"        , emit: versions
 
     when:
@@ -28,7 +28,7 @@ process SAMPLE_INTERPRO {
         --min_membership ${min_membership} \\
         --num_per_db ${num_per_db} \\
         --logfile log.txt \\
-        --output sampled_metadata.tsv         
+        --output sampled_metadata.csv         
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

@@ -1,4 +1,4 @@
-process CONVERT_SAMPLED_TO_FASTA {
+process COMBINE_DB_FASTA {
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"
@@ -7,30 +7,21 @@ process CONVERT_SAMPLED_TO_FASTA {
         'community.wave.seqera.io/library/biopython:1.84--3318633dad0031e7' }"
 
     input:
-    path sampled_metadata
-    path hamap
-    path ncbifam
-    path panther
-    path pfam
+    path fasta_folder
 
     output:
-    path "sampled_fasta"               , emit: fasta_folder
-    path "updated_sampled_metadata.csv", emit: metadata
-    path "versions.yml"                , emit: versions
+    path "log.txt"          , emit: log
+    path "combined_db.fasta", emit: fasta
+    path "versions.yml"     , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
 
     script:
     """
-    convert_sampled_to_fasta.py \\
-        --metadata_file ${sampled_metadata} \\
-        --hamap ${hamap} \\
-        --ncbifam ${ncbifam} \\
-        --panther ${panther} \\
-        --pfam ${pfam} \\
-        --output_folder sampled_fasta \\
-        --updated_metadata_file updated_sampled_metadata.csv
+    combine_db_fasta.py \\
+        --input_folder ${fasta_folder} \\
+        --output_file combined_db.fasta
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

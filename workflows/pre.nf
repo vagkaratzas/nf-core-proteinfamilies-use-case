@@ -7,6 +7,7 @@ include { EXTRACT_PFAM_METADATA               } from '../modules/local/extract_p
 include { FILTER_VALID_CANDIDATE_FAMILIES     } from '../modules/local/filter_valid_candidate_families/main'
 include { SAMPLE_INTERPRO                     } from '../modules/local/sample_interpro/main'
 include { CONVERT_SAMPLED_TO_FASTA            } from '../modules/local/convert_sampled_to_fasta/main'
+include { COMBINE_DB_FASTA                    } from '../modules/local/combine_db_fasta/main'
 
 workflow PRE {
     take:
@@ -50,4 +51,6 @@ workflow PRE {
     CONVERT_SAMPLED_TO_FASTA( SAMPLE_INTERPRO.out.metadata, \
         ch_hamap, ch_ncbifam, ch_panther, ch_pfam
     )
+
+    COMBINE_DB_FASTA( CONVERT_SAMPLED_TO_FASTA.out.fasta_folder )
 }

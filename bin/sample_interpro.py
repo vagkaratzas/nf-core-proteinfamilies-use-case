@@ -101,13 +101,14 @@ def sample_entries(df, tree_nodes, num_per_db, logfile):
                 siblings = node.get_siblings()
                 parent = {node.get_direct_parent()} if node.get_direct_parent() else set()
 
-                to_remove = descendants | siblings | parent
+                to_remove = descendants | siblings | parent | {ipr}
                 excluded |= to_remove
 
                 log_selection(logfile, ipr, {
                     "descendants": descendants,
                     "siblings": siblings,
                     "parent": parent,
+                    "self": {ipr},  # optional, just for logging clarity
                 })
 
     sampled_df = pd.concat([pd.DataFrame(rows) for rows in samples_per_db.values()])
