@@ -10,6 +10,7 @@ include { CONVERT_SAMPLED_TO_FASTA            } from '../modules/local/convert_s
 include { COMBINE_DB_FASTA                    } from '../modules/local/combine_db_fasta/main'
 include { DIAMOND_MAKEDB                      } from '../modules/nf-core/diamond/makedb/main'
 include { DIAMOND_BLASTP                      } from '../modules/nf-core/diamond/blastp/main'
+include { IDENTIFY_UNIPROT_DECOYS             } from '../modules/local/identify_uniprot_decoys/main'
 
 workflow PRE {
     take:
@@ -22,6 +23,7 @@ workflow PRE {
     path_to_swissprot
     min_membership
     num_per_db
+    num_decoys
 
     main:
     ch_hierarchy = Channel.fromPath(interpo_hierarchy_file, checkIfExists: true)
@@ -65,5 +67,6 @@ workflow PRE {
     ch_sp = Channel.of([ [id:'sp_diamond_db'], [ file(path_to_swissprot, checkIfExists: true) ] ])
     DIAMOND_MAKEDB( ch_sp, [], [], [] )
     DIAMOND_BLASTP( ch_fasta, DIAMOND_MAKEDB.out.db, 6, 'qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore' )
-    
+
+    IDENTIFY_UNIPROT_DECOYS( DIAMOND_BLASTP.out.txt, ch_sp, num_decoys )
 }
