@@ -8,6 +8,8 @@ include { FILTER_VALID_CANDIDATE_FAMILIES     } from '../modules/local/filter_va
 include { SAMPLE_INTERPRO                     } from '../modules/local/sample_interpro/main'
 include { CONVERT_SAMPLED_TO_FASTA            } from '../modules/local/convert_sampled_to_fasta/main'
 include { COMBINE_DB_FASTA                    } from '../modules/local/combine_db_fasta/main'
+include { DIAMOND_MAKEDB                      } from '../modules/nf-core/diamond/makedb/main'
+include { DIAMOND_BLASTP                      } from '../modules/nf-core/diamond/blastp/main'
 
 workflow PRE {
     take:
@@ -17,6 +19,7 @@ workflow PRE {
     path_to_ncbifam
     path_to_panther
     path_to_pfam
+    path_to_swissprot
     min_membership
     num_per_db
 
@@ -53,4 +56,14 @@ workflow PRE {
     )
 
     COMBINE_DB_FASTA( CONVERT_SAMPLED_TO_FASTA.out.fasta_folder )
+    
+    ch_fasta = COMBINE_DB_FASTA.out.fasta
+        .map { file ->
+            [[id: 'combined_db_fasta'], file]
+        }
+
+    ch_sp = Channel.of([ [id:'sp_diamond_db'], [ file(path_to_swissprot, checkIfExists: true) ] ])
+    DIAMOND_MAKEDB( ch_sp, [], [], [] )
+    DIAMOND_BLASTP( ch_fasta, DIAMOND_MAKEDB.out.db, 6, 'qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore' )
+    
 }
