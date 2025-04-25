@@ -46,6 +46,10 @@ def clean_sequence(seq: str) -> str:
     return ''.join([aa for aa in seq if aa.isupper()])
 
 
+def clean_id(seq_id: str) -> str:
+    return seq_id.translate(str.maketrans(".|=", "___"))  # Replaces .|= with underscores
+
+
 def convert_to_fasta(input_file: Path, fmt: str, output_file: Path):
     seen_ids = set()
     seen_seqs = set()
@@ -66,9 +70,12 @@ def convert_to_fasta(input_file: Path, fmt: str, output_file: Path):
         if clean_seq in seen_seqs:
             continue  # Skip duplicate sequence
 
+        # Clean the sequence ID by replacing special characters with underscores
+        cleaned_id = clean_id(record.id)
+
         seen_ids.add(record.id)
         seen_seqs.add(clean_seq)
-        records.append(SeqRecord(seq=clean_seq, id=record.id, description=""))
+        records.append(SeqRecord(seq=clean_seq, id=cleaned_id, description=""))
 
     if records:
         output_file.parent.mkdir(parents=True, exist_ok=True)
