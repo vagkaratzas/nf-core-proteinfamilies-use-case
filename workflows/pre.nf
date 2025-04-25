@@ -11,6 +11,7 @@ include { COMBINE_DB_FASTA                    } from '../modules/local/combine_d
 include { DIAMOND_MAKEDB                      } from '../modules/nf-core/diamond/makedb/main'
 include { DIAMOND_BLASTP                      } from '../modules/nf-core/diamond/blastp/main'
 include { IDENTIFY_UNIPROT_DECOYS             } from '../modules/local/identify_uniprot_decoys/main'
+include { COMBINE_DECOY_FASTA                 } from '../modules/local/combine_decoy_fasta/main'
 
 workflow PRE {
     take:
@@ -69,4 +70,6 @@ workflow PRE {
     DIAMOND_BLASTP( ch_fasta, DIAMOND_MAKEDB.out.db, 6, 'qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore' )
 
     IDENTIFY_UNIPROT_DECOYS( DIAMOND_BLASTP.out.txt, ch_sp, num_decoys )
+
+    COMBINE_DECOY_FASTA( COMBINE_DB_FASTA.out.fasta, IDENTIFY_UNIPROT_DECOYS.out.decoys ) 
 }

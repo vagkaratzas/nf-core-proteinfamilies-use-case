@@ -4,11 +4,11 @@ Sample InterPro families and test how well they can be reconstructed via nf-core
 ## Protein families database links and versions
 Need to first download and decompress the protein family SEED alignments from the following databases, then update path parameters accordingly.
 ```
-DB  link    last_update size
-NCBIFAM https://ftp.ncbi.nlm.nih.gov/hmm/current/hmm_PGAP.SEED.tgz  2024-12-16 10:56    67M
-PANTHER https://data.pantherdb.org/ftp/panther_library/current_release/PANTHER19.0_fasta.tgz    2024    461M
-HAMAP   https://ftp.expasy.org/databases/hamap/hamap_alignments.tar.gz  2025-02-05 16:00    1.2G
-PFAM    https://ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam37.2/Pfam-A.seed.gz   2024-12-05 07:31    159M
+DB  ver link    last_update size
+NCBIFAM 17.0    https://ftp.ncbi.nlm.nih.gov/hmm/current/hmm_PGAP.SEED.tgz  2024-12-16 10:56    67M
+PANTHER 19.0    https://data.pantherdb.org/ftp/panther_library/current_release/PANTHER19.0_fasta.tgz    2024    461M
+HAMAP   -   https://ftp.expasy.org/databases/hamap/hamap_alignments.tar.gz  2025-02-05 16:00    1.2G
+PFAM    37.2    https://ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam37.2/Pfam-A.seed.gz   2024-12-05 07:31    159M
 ```
 
 NCBIFAM has two types of families; TIGRxxxxx and NFxxxxxx.

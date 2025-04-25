@@ -24,11 +24,17 @@ def get_non_hit_sequences(hits_file, fasta_file):
                 if len(cols) >= 2:
                     hit_ids.add(cols[1])  # second column
 
-    # Collect non-hit sequences from FASTA
+    # Collect non-hit sequences from FASTA, ensuring no duplicates by name or sequence
+    seen_names = set()
+    seen_sequences = set()
     decoys = []
+
     for seq in pyfastx.Fasta(fasta_file, build_index=True):
-        if seq.name not in hit_ids:
+        # Skip if the sequence name is a hit or if the sequence is already seen
+        if seq.name not in hit_ids and seq.name not in seen_names and seq.seq not in seen_sequences:
             decoys.append((seq.name, seq.seq))
+            seen_names.add(seq.name)
+            seen_sequences.add(seq.seq)
     
     return decoys
 
