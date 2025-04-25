@@ -1,5 +1,5 @@
 include { PRE  } from './workflows/pre'
-// include { POST } from './workflows/post'
+include { POST } from './workflows/post'
 
 workflow NFCORE_PROTEINFAMILIES_USE_CASE {
 
@@ -19,9 +19,9 @@ workflow NFCORE_PROTEINFAMILIES_USE_CASE {
     //
     // WORKFLOW: Run post pipeline
     //
-    // else if (workflow_mode == "post") {
-    //     POST(params.non_redundant_msas)
-    // }
+    else if (workflow_mode == "post") {
+        POST( params.path_to_alignments, params.path_to_db_fasta, params.path_to_decoys )
+    }
 }
 
 workflow {
