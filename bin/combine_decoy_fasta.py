@@ -26,7 +26,7 @@ def combine_fastas(families_fasta, decoys_fasta, combined_fasta, log_file):
             # Check for duplicate by name
             if name in unique_sequences:
                 duplicate_names.add(name)
-            # Check for duplicate by sequence
+            # Check for duplicates by sequence, since some 100% identical sequences might not be identified by diamond/blastp (because results are capped at 25 entries per query sequence)
             elif seq in unique_sequences.values():
                 duplicate_sequences.add(seq)
             else:
