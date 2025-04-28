@@ -21,7 +21,7 @@ workflow NFCORE_PROTEINFAMILIES_USE_CASE {
     //
     else if (workflow_mode == "post") {
         POST( params.path_to_alignments, params.path_to_db_fasta, params.path_to_decoys, \
-            params.path_to_sampled_metadata, params.path_to_sampled_fasta_folder
+            params.path_to_sampled_metadata, params.path_to_sampled_fasta_folder, params.jaccard_similarity_threshold
         )
     }
 }

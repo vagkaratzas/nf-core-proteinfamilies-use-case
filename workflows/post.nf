@@ -1,7 +1,7 @@
 include { CALCULATE_SEQUENCE_STATS       } from '../modules/local/calculate_sequence_stats/main'
 include { CALCULATE_DB_SEQUENCE_COVERAGE } from '../modules/local/calculate_db_sequence_coverage/main'
 include { ANALYZE_RECRUITED_DECOYS       } from '../modules/local/analyze_recruited_decoys/main'
-// include { CALCULATE_JACCARD_SIMILARITY } from '../modules/local/calculate_jaccard_similarity/main'
+include { CALCULATE_JACCARD_SIMILARITY   } from '../modules/local/calculate_jaccard_similarity/main'
 // include { GET_SIZE_DISTRIBUTIONS       } from '../modules/local/get_size_distributions/main'
 
 workflow POST {
@@ -11,6 +11,7 @@ workflow POST {
     decoys
     sampled_metadata
     sampled_fasta_folder
+    jaccard_similarity_threshold
 
     main:
     ch_aln      = Channel.fromPath(alignments, checkIfExists: true)
@@ -24,5 +25,7 @@ workflow POST {
     CALCULATE_DB_SEQUENCE_COVERAGE( ch_metadata, CALCULATE_SEQUENCE_STATS.out.original_count, ch_fasta_folder )
 
     ANALYZE_RECRUITED_DECOYS( ch_aln, ch_decoys )
+
+    CALCULATE_JACCARD_SIMILARITY( ch_aln, ch_fasta_folder, jaccard_similarity_threshold )
 
 }
