@@ -3,7 +3,7 @@ include { CALCULATE_DB_SEQUENCE_COVERAGE } from '../modules/local/calculate_db_s
 include { ANALYZE_RECRUITED_DECOYS       } from '../modules/local/analyze_recruited_decoys/main'
 include { CALCULATE_JACCARD_SIMILARITY   } from '../modules/local/calculate_jaccard_similarity/main'
 include { CALCULATE_DB_FAMILY_COVERAGE   } from '../modules/local/calculate_db_family_coverage/main'
-// include { GET_SIZE_DISTRIBUTIONS       } from '../modules/local/get_size_distributions/main'
+include { GET_SIZE_DISTRIBUTIONS         } from '../modules/local/get_size_distributions/main'
 
 workflow POST {
     take:
@@ -31,4 +31,5 @@ workflow POST {
 
     CALCULATE_DB_FAMILY_COVERAGE( CALCULATE_JACCARD_SIMILARITY.out.edgelist, ch_fasta_folder )
 
+    GET_SIZE_DISTRIBUTIONS ( ch_metadata, CALCULATE_JACCARD_SIMILARITY.out.edgelist )
 }
