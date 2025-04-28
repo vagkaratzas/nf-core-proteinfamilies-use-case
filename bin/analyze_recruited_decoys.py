@@ -23,7 +23,8 @@ def process_msa_file(msa_path, decoy_ids):
     decoy_sequences = 0
     for record in SeqIO.parse(msa_path, "fasta"):
         total_sequences += 1
-        if record.id in decoy_ids:
+        cleaned_name = record.id.split("/", 1)[0]
+        if cleaned_name in decoy_ids:
             decoy_sequences += 1
     percentage = (decoy_sequences / total_sequences * 100) if total_sequences > 0 else 0
     return {

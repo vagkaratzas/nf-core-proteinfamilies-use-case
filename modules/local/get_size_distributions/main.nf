@@ -11,8 +11,8 @@ process GET_SIZE_DISTRIBUTIONS {
     path similarity_file
 
     output:
-    path "log.txt"     , emit: log
-    path "versions.yml", emit: versions
+    path "size_distributions.txt", emit: log
+    path "versions.yml"          , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
