@@ -7,7 +7,7 @@ import random
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Sample non-hit decoy sequences from a FASTA file.")
-    parser.add_argument("--hits_file", required=True, help="Path to diamond/blastp hits file (second column will be used)")
+    parser.add_argument("--hits_file", required=True, help="Path to diamond/blastp hits file (first column will be used)")
     parser.add_argument("--fasta_file", required=True, help="Path to full UniProt SwissProt FASTA file")
     parser.add_argument("--output_file", required=True, help="Path to output sampled decoy FASTA file")
     parser.add_argument("--num_decoys", type=int, default=10000, help="Number of decoys to sample (default: 10000)")
@@ -15,14 +15,14 @@ def parse_args():
 
 
 def get_non_hit_sequences(hits_file, fasta_file):
-    # Read second column (hit IDs)
+    # Read first column (hit IDs)
     hit_ids = set()
     with open(hits_file) as f:
         for line in f:
             if line.strip():
                 cols = line.strip().split()
                 if len(cols) >= 2:
-                    hit_ids.add(cols[1])  # second column
+                    hit_ids.add(cols[0])  # first column
 
     # Collect non-hit sequences from FASTA, ensuring no duplicates by name or sequence
     seen_names = set()

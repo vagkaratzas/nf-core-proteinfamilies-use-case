@@ -65,9 +65,9 @@ workflow PRE {
             [[id: 'combined_db_fasta'], file]
         }
 
+    DIAMOND_MAKEDB( ch_fasta, [], [], [] )
     ch_sp = Channel.of([ [id:'sp_diamond_db'], [ file(path_to_swissprot, checkIfExists: true) ] ])
-    DIAMOND_MAKEDB( ch_sp, [], [], [] )
-    DIAMOND_BLASTP( ch_fasta, DIAMOND_MAKEDB.out.db, 6, 'qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore' )
+    DIAMOND_BLASTP( ch_sp, DIAMOND_MAKEDB.out.db, 6, 'qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore' )
 
     IDENTIFY_UNIPROT_DECOYS( DIAMOND_BLASTP.out.txt, ch_sp, num_decoys )
 
