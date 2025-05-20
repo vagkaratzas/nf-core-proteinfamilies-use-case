@@ -37,9 +37,9 @@ def process_msa_file(msa_path, decoy_ids):
     # Remove multiple suffixes like .fas.gz or .fasta.gz
     base_name = msa_path.name
     if base_name.endswith(".fas.gz"):
-        family = base_name[:-8]
+        family = base_name[:-7]
     elif base_name.endswith(".fasta.gz"):
-        family = base_name[:-10]
+        family = base_name[:-9]
     elif base_name.endswith(".fas"):
         family = base_name[:-4]
     elif base_name.endswith(".fasta"):
