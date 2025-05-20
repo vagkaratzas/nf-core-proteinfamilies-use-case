@@ -2,12 +2,13 @@
 
 import argparse
 import csv
+import gzip
 from pathlib import Path
 from Bio import SeqIO
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Count decoy sequences in MSAs and output stats.")
-    parser.add_argument("--msa_folder", required=True, help="Folder containing MSA files (FASTA format).")
+    parser.add_argument("--msa_folder", required=True, help="Folder containing MSA files (FASTA format, optionally gzipped).")
     parser.add_argument("--decoy_fasta", required=True, help="FASTA file containing decoy sequences.")
     parser.add_argument("--output_csv", required=True, help="Output CSV filename.")
     return parser.parse_args()
@@ -21,14 +22,34 @@ def read_decoy_ids(decoy_fasta):
 def process_msa_file(msa_path, decoy_ids):
     total_sequences = 0
     decoy_sequences = 0
-    for record in SeqIO.parse(msa_path, "fasta"):
-        total_sequences += 1
-        cleaned_name = record.id.split("/", 1)[0]
-        if cleaned_name in decoy_ids:
-            decoy_sequences += 1
+
+    is_gzipped = msa_path.suffix == ".gz"
+    open_func = gzip.open if is_gzipped else open
+    mode = 'rt'  # read text mode
+
+    with open_func(msa_path, mode) as handle:
+        for record in SeqIO.parse(handle, "fasta"):
+            total_sequences += 1
+            cleaned_name = record.id.split("/", 1)[0]
+            if cleaned_name in decoy_ids:
+                decoy_sequences += 1
+
+    # Remove multiple suffixes like .fas.gz or .fasta.gz
+    base_name = msa_path.name
+    if base_name.endswith(".fas.gz"):
+        family = base_name[:-8]
+    elif base_name.endswith(".fasta.gz"):
+        family = base_name[:-10]
+    elif base_name.endswith(".fas"):
+        family = base_name[:-4]
+    elif base_name.endswith(".fasta"):
+        family = base_name[:-6]
+    else:
+        family = msa_path.stem
+
     percentage = (decoy_sequences / total_sequences * 100) if total_sequences > 0 else 0
     return {
-        "family": msa_path.stem,
+        "family": family,
         "decoy_count": decoy_sequences,
         "total_sequences": total_sequences,
         "decoy_percentage": percentage
