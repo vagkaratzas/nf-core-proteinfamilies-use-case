@@ -9,7 +9,7 @@ def main(input_file, output_file):
     df = pd.read_csv(input_file, sep="\t")
 
     # Define similarity thresholds
-    thresholds = [0.6, 0.7, 0.8, 0.9, 1.0]
+    thresholds = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
     db_layers = ['hamap', 'ncbifam', 'panther', 'pfam']
 
     # Count entries ≥ each threshold, grouped by db_layer
@@ -30,11 +30,11 @@ def main(input_file, output_file):
 
     plot_df.T.plot(kind='bar', stacked=True, color=[colors[db] for db in plot_df.index])
 
-    plt.xlabel('Similarity score threshold (≥)')
-    plt.ylabel('Number of entries')
-    plt.title('Entries by similarity threshold and db_layer')
+    plt.xlabel('Jaccard similarity score threshold')
+    plt.ylabel('Number of produced families that match original families')
+    plt.title('Entries by similarity threshold and database')
     plt.xticks(rotation=0)
-    plt.legend(title='DB Layer')
+    plt.legend(title='DB')
     plt.tight_layout()
 
     # Save to PNG
