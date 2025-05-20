@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import gzip
 import argparse
 from collections import defaultdict
 from Bio import SeqIO
@@ -8,8 +9,9 @@ from Bio import AlignIO
 
 def load_fasta_names(fasta_path):
     names = set()
-    for record in SeqIO.parse(fasta_path, "fasta"):
-        names.add(record.id.split("/", 1)[0])
+    with (gzip.open(fasta_path, "rt") if fasta_path.endswith(".gz") else open(fasta_path)) as handle:
+        for record in SeqIO.parse(handle, "fasta"):
+            names.add(record.id.split("/", 1)[0])
     return names
 
 def parse_alignment_folder(folder_path, original_set, decoy_set, file_type):
@@ -42,15 +44,21 @@ def parse_alignment_folder(folder_path, original_set, decoy_set, file_type):
             except Exception as e:
                 print(f"Warning: Failed to parse {filepath} as Stockholm. Error: {e}")
 
-        elif file_type == "aln":
-            for record in SeqIO.parse(filepath, "fasta"):
-                cleaned_name = record.id.split("/", 1)[0]
-                if cleaned_name in original_count:
-                    original_count[cleaned_name] += 1
-                elif cleaned_name in decoy_count:
-                    decoy_count[cleaned_name] += 1
-                else:
-                    unknown_proteins.add(cleaned_name)
+        elif file_type in ("aln", "fas.gz"):
+            open_func = gzip.open if file_type == "fas.gz" else open
+            mode = "rt" if file_type == "fas.gz" else "r"
+            try:
+                with open_func(filepath, mode) as handle:
+                    for record in SeqIO.parse(handle, "fasta"):
+                        cleaned_name = record.id.split("/", 1)[0]
+                        if cleaned_name in original_count:
+                            original_count[cleaned_name] += 1
+                        elif cleaned_name in decoy_count:
+                            decoy_count[cleaned_name] += 1
+                        else:
+                            unknown_proteins.add(cleaned_name)
+            except Exception as e:
+                print(f"Warning: Failed to parse {filepath}. Error: {e}")
 
     return original_count, decoy_count, unknown_proteins
 
@@ -87,7 +95,10 @@ def main():
     parser.add_argument("--original_fasta", help="Path to the original FASTA file")
     parser.add_argument("--decoy_fasta", help="Path to the decoy FASTA file")
     parser.add_argument("--alignment_folder", help="Folder containing alignment files")
-    parser.add_argument("--alignment_type", choices=["sto", "aln"], help="Type of alignment files: 'sto' or 'aln'")
+    parser.add_argument(
+        "--alignment_type", choices=["sto", "aln", "fas.gz"],
+        help="Type of alignment files: 'sto', 'aln', or 'fas.gz'"
+    )
 
     args = parser.parse_args()
 
