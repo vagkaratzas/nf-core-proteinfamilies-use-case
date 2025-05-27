@@ -3,6 +3,7 @@
 import argparse
 import pandas as pd
 import random
+import re
 from collections import defaultdict
 from pathlib import Path
 
@@ -42,8 +43,8 @@ def build_tree_from_text(tree_text):
     stack = []
     nodes = {}
     for line in tree_text.strip().splitlines():
-        depth = line.count("--")
-        line = line.strip("- ")
+        depth = len(re.match(r"^-*", line).group(0)) // 2
+        line = re.sub(r"^[-]+", "", line).strip()
         if not line:
             continue
         parts = line.split("::")
