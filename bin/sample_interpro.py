@@ -37,6 +37,14 @@ class Node:
     def get_direct_parent(self):
         return self.parent.ipr_id if self.parent else None
 
+    def get_ancestors(self):
+        ancestors = set()
+        current = self.parent
+        while current:
+            ancestors.add(current.ipr_id)
+            current = current.parent
+        return ancestors
+
 
 def build_tree_from_text(tree_text):
     root = None
@@ -99,17 +107,17 @@ def sample_entries(df, tree_nodes, num_per_db, logfile):
             node = tree_nodes.get(ipr)
             if node:
                 descendants = node.get_descendants()
+                ancestors = node.get_ancestors()
                 siblings = node.get_siblings()
-                parent = {node.get_direct_parent()} if node.get_direct_parent() else set()
 
-                to_remove = descendants | siblings | parent | {ipr}
+                to_remove = descendants | ancestors | siblings | {ipr}
                 excluded |= to_remove
 
                 log_selection(logfile, ipr, {
                     "descendants": descendants,
+                    "ancestors": ancestors,
                     "siblings": siblings,
-                    "parent": parent,
-                    "self": {ipr},  # optional, just for logging clarity
+                    "self": {ipr},
                 })
 
     sampled_df = pd.concat([pd.DataFrame(rows) for rows in samples_per_db.values()])
