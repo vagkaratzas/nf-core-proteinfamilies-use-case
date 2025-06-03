@@ -1,3 +1,4 @@
+include { REMOVE_DUPLICATE_BRANCHES           } from '../modules/local/remove_duplicate_branches/main'
 include { EXTRACT_VALID_INTERPRO_IDS          } from '../modules/local/extract_valid_interpro_ids/main'
 include { EXTRACT_CANDIDATE_INTERPRO_FAMILIES } from '../modules/local/extract_candidate_interpro_families/main'
 include { EXTRACT_HAMAP_METADATA              } from '../modules/local/extract_hamap_metadata/main'
@@ -28,7 +29,8 @@ workflow PRE {
 
     main:
     ch_hierarchy = Channel.fromPath(interpo_hierarchy_file, checkIfExists: true)
-    EXTRACT_VALID_INTERPRO_IDS( ch_hierarchy )
+    REMOVE_DUPLICATE_BRANCHES( ch_hierarchy )
+    EXTRACT_VALID_INTERPRO_IDS( REMOVE_DUPLICATE_BRANCHES.out.hierarchy )
 
     ch_mapping = Channel.fromPath(id_mapping_file, checkIfExists: true)
     EXTRACT_CANDIDATE_INTERPRO_FAMILIES( EXTRACT_VALID_INTERPRO_IDS.out.output, ch_mapping )
@@ -50,7 +52,7 @@ workflow PRE {
         EXTRACT_PANTHER_METADATA.out.metadata, EXTRACT_PFAM_METADATA.out.metadata
     )
 
-    SAMPLE_INTERPRO( FILTER_VALID_CANDIDATE_FAMILIES.out.metadata, ch_hierarchy, \
+    SAMPLE_INTERPRO( FILTER_VALID_CANDIDATE_FAMILIES.out.metadata, REMOVE_DUPLICATE_BRANCHES.out.hierarchy, \
         min_membership, num_per_db
     )
 
@@ -71,5 +73,5 @@ workflow PRE {
 
     IDENTIFY_UNIPROT_DECOYS( DIAMOND_BLASTP.out.txt, ch_sp, num_decoys )
 
-    COMBINE_DECOY_FASTA( COMBINE_DB_FASTA.out.fasta, IDENTIFY_UNIPROT_DECOYS.out.decoys ) 
+    COMBINE_DECOY_FASTA( COMBINE_DB_FASTA.out.fasta, IDENTIFY_UNIPROT_DECOYS.out.decoys )
 }
