@@ -5,6 +5,7 @@ include { CALCULATE_JACCARD_SIMILARITY   } from '../modules/local/calculate_jacc
 include { PRODUCE_DB_STACKED_BARPLOT     } from '../modules/local/produce_db_stacked_barplot/main'
 include { CALCULATE_DB_FAMILY_COVERAGE   } from '../modules/local/calculate_db_family_coverage/main'
 include { GET_SIZE_DISTRIBUTIONS         } from '../modules/local/get_size_distributions/main'
+include { INVESTIGATE_MATCHED_ORIGINALS  } from '../modules/local/investigate_matched_originals/main'
 
 workflow POST {
     take:
@@ -14,6 +15,8 @@ workflow POST {
     sampled_metadata
     sampled_fasta_folder
     jaccard_similarity_threshold
+    mmseqs_tsv
+    generated_fasta
 
     main:
     ch_aln      = Channel.fromPath(alignments, checkIfExists: true)
@@ -34,5 +37,10 @@ workflow POST {
 
     CALCULATE_DB_FAMILY_COVERAGE( CALCULATE_JACCARD_SIMILARITY.out.edgelist, ch_fasta_folder )
 
-    GET_SIZE_DISTRIBUTIONS ( ch_metadata, CALCULATE_JACCARD_SIMILARITY.out.edgelist )
+    GET_SIZE_DISTRIBUTIONS( ch_metadata, CALCULATE_JACCARD_SIMILARITY.out.edgelist )
+
+    ch_mmseqs_tsv      = Channel.fromPath(mmseqs_tsv     , checkIfExists: true)
+    ch_generated_fasta = Channel.fromPath(generated_fasta, checkIfExists: true)
+    INVESTIGATE_MATCHED_ORIGINALS( ch_fasta_folder, ch_mmseqs_tsv, ch_metadata, ch_generated_fasta )
+
 }
